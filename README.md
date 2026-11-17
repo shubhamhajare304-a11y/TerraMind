@@ -1,213 +1,201 @@
-# TerraMind – AI Environmental Change Detection Platform
+# TerraMind – AI-Based Environmental Change Detection Platform
 
-> **A science-honest, college-demonstration-ready environmental intelligence platform powered by VARI, RGB Optical Water Index, and EuroSAT ResNet-50.**
-
----
-
-## Project Overview
-
-TerraMind is an AI-powered platform for detecting environmental changes between two satellite or aerial images captured at different times. It compares an **Earlier Observation (T0)** and a **Later Observation (T1)** and runs three specialised analysis modules to quantify:
-
-1. **Vegetation Change** – how much forest or green cover was lost, gained, or remained stable.
-2. **Water Body Change** – how surface water expanded, receded, or remained stable.
-3. **Land Cover Change** – how the dominant land cover category shifted between epochs.
-
-The platform is designed to be honest: every result displayed comes from actual backend calculations using real images. No hardcoded numbers, no fake maps, no fabricated satellite coordinates.
+> **A scientifically honest, university-demonstration-ready environmental intelligence system powered by RGB-based VARI, RGB Optical Water Index Estimation, and EuroSAT ResNet-50 deep neural network classification.**
 
 ---
 
-## Main Objectives
+## 1. Project Overview & Purpose
 
-- Provide a professional, single-page environmental monitoring dashboard.
-- Display predefined demonstration datasets automatically on startup.
-- Allow custom image uploads (T0 + T1) for ad-hoc analysis.
-- Produce honest, explainable results with scientific method notes.
-- Run with one double-click (`start.bat`) — no IDE required.
+TerraMind is an AI-powered environmental monitoring platform designed to quantify ecological and spatial transitions between two multi-temporal observation epochs:
+- **Earlier Observation (T0)** – Baseline raster imagery
+- **Later Observation (T1)** – Follow-up raster imagery
 
----
-
-## Three Analysis Modules
-
-### Module 1 – Vegetation Change Detection
-- **Index:** VARI (Visible Atmospherically Resistant Index)
-- **Formula:** `VARI = (Green − Red) / (Green + Red − Blue)`
-- **Why VARI, not NDVI:** NDVI requires calibrated Near-Infrared (NIR) bands which are not available in standard RGB imagery. VARI works within the visible spectrum.
-- **Outputs:** Vegetation Loss %, Vegetation Growth %, Stable Vegetation %, Net Canopy Shift, change map image.
-- **Label displayed:** *RGB-based VARI Estimation*
-
-### Module 2 – Water Body Change Detection
-- **Index:** RGB Optical Water Index (blue-dominant absorption detection)
-- **Why not NDWI:** NDWI requires NIR bands. This method uses visible-spectrum blue-channel dominance with shadow/soil exclusion heuristics.
-- **Outputs:** Water Expansion %, Water Reduction %, Stable Water Areas %, Net Water Dynamics, change map image.
-- **Label displayed:** *RGB Optical Water Index Estimation*
-
-### Module 3 – Land Cover Change Detection
-- **Model:** EuroSAT ResNet-50 (10-class patch/scene classifier)
-- **Classes:** Annual Crop, Forest, Herbaceous Vegetation, Highway, Industrial, Pasture, Permanent Crop, Residential, River, Sea Lake
-- **Method:** Scene-level classification of T0 and T1 separately; 3×3 spatial patch grid for spatial transition analysis; physical pixel spectral delta map.
-- **Important limitation:** ResNet-50 performs patch/image-level classification — it does NOT perform sub-pixel semantic segmentation.
-- **Label displayed:** *EuroSAT ResNet-50 Deep Classification*
+The application performs three dedicated, scientifically grounded environmental analyses:
+1. **Vegetation Change Detection** – Estimates canopy cover dynamics using visible green reflectance resistance (VARI).
+2. **Water Body Change Detection** – Estimates surface hydrology dynamics and recession/expansion using visible spectrum absorption.
+3. **Land Cover Change Detection** – Evaluates macro-scene land cover categories and a 3×3 spatial patch grid using a pretrained EuroSAT ResNet-50 convolutional neural network, paired with RGB pixel differential sensitivity.
 
 ---
 
-## Technologies Used
+## 2. Demonstration Case Studies
 
-| Layer | Technology |
+The platform provides predefined demonstration study areas with verified multi-temporal tiles, alongside full custom upload capabilities:
+
+- **Case 1: Regional Landscape** (`area_01`) – Regional survey spanning woodland canopy, agricultural parcels, and a central river corridor.
+- **Case 2: River Basin & Water Change** (`area_02`) – Surface hydrology corridor tracking seasonal water expansion and channel dynamics.
+- **Case 3: Vegetation Change** (`area_03`) – Woodland canopy tracking timber clear-cut, vegetation dynamics, and ground disturbance.
+- **Custom: Upload Images** (`custom`) – Allows users to upload their own T0 (Earlier) and T1 (Later) raster scenes directly from desktop storage.
+
+---
+
+## 3. Three Environmental Analysis Modules
+
+### Module 1: Vegetation Change Detection
+- **Methodology:** RGB-based VARI Estimation (Visible Atmospherically Resistant Index).
+- **Mathematical Formula:** `VARI = (Green − Red) / (Green + Red − Blue)`
+- **Calculated Metrics:**
+  - *Possible Vegetation Reduction (%)* – Reduction in estimated green vegetation.
+  - *Possible Vegetation Increase (%)* – Increase in estimated green vegetation.
+  - *Stable Vegetation Pixels (%)* – Persistent green canopy vegetation pixels.
+  - *Net Vegetation Change (%)* – Overall canopy trajectory (T1 cover minus T0 cover).
+- **Scientific Limitation:** VARI is not NDVI. Accurate NDVI analysis requires calibrated Near-Infrared (NIR) satellite data.
+
+### Module 2: Water Body Change Detection
+- **Methodology:** RGB Optical Water Index Estimation.
+- **Principle:** Evaluates visible blue/green absorption signatures with shadow and dark soil exclusion heuristics.
+- **Calculated Metrics:**
+  - *Possible Water Increase (%)* – Increase in estimated water coverage.
+  - *Possible Water Reduction (%)* – Reduction in estimated water coverage.
+  - *Stable Water Pixels (%)* – Persistent surface water maintaining optical absorption signature.
+  - *Net Water Change (%)* – Net hydrological shift (T1 coverage minus T0 coverage).
+- **Scientific Limitation:** This method is not NDWI. Accurate NDWI analysis requires suitable Near-Infrared (NIR) satellite bands. Water increase indicates higher estimated water coverage, not verified flooding.
+
+### Module 3: Land Cover Change Detection
+- **Model:** EuroSAT ResNet-50 Deep Convolutional Neural Network (fine-tuned on 10 EuroSAT Sentinel-2 classes).
+- **Supported Classes:** AnnualCrop, Forest, HerbaceousVegetation, Highway, Industrial, Pasture, PermanentCrop, Residential, River, SeaLake.
+- **Calculated Outputs:**
+  - *Baseline Classification (T0)* & Model Confidence score (%).
+  - *Follow-up Classification (T1)* & Model Confidence score (%).
+  - *3×3 Spatial Patch Transition Grid* – Evaluates 9 spatial quadrants to localize class shifts across the image.
+  - *RGB Pixel Difference (%)* – Proportion of pixels exceeding the selected RGB delta threshold.
+  - *RGB Pixel Stability (%)* – Proportion of spectrally consistent background pixels.
+- **Important Disclosure:**
+  - ResNet-50 is a pretrained deep learning model that classifies image patches into land-cover categories.
+  - Confidence is the model's prediction score, not guaranteed ground-truth accuracy.
+  - The 3×3 grid represents image patch classification; it is not pixel-level semantic segmentation.
+  - RGB pixel difference and AI land-cover classification are two separate calculations.
+
+---
+
+## 4. Scientific Limitations & Disclosures
+
+TerraMind adheres to scientific honesty:
+1. **Visible RGB Imagery:** Uploaded images contain visible RGB information only.
+2. **No NIR Bands:** RGB imagery does not provide Near-Infrared (NIR) or Short-Wave Infrared (SWIR) bands.
+3. **VARI is Not NDVI:** VARI is an optical greenness approximation. True NDVI requires calibrated NIR sensors.
+4. **Optical Water is Not NDWI:** RGB water estimation is not NDWI. Accurate NDWI requires NIR sensors.
+5. **Pixel vs Ground Truth:** Image pixel differences do not prove actual geographical environmental changes; illumination variations can cause false deltas.
+6. **Geographical Co-Registration:** Images must be geographically aligned for reliable comparisons. Rescaling does not establish co-registration.
+7. **Pixel Proportions:** Calculated percentages represent image pixel proportions, not actual physical land area in hectares.
+8. **Demonstration Imagery:** Predefined demonstration imagery does not have ground-truth verified geographical coordinates or observation dates.
+
+---
+
+## 5. Direct PDF Report Generation (6 Pages)
+
+Replacing legacy CSV exports, TerraMind features an in-browser direct PDF report generator built with `jsPDF` and `jspdf-autotable`. Clicking **"Download PDF Report"** immediately downloads `TerraMind_Environmental_Report.pdf` without opening a browser print dialog.
+
+The report includes:
+- **Page 1:** Project Information, academic metadata, and executive scope table.
+- **Page 2:** Multi-Temporal Observation Imagery (actual T0 and T1 images rendered side-by-side with dimensions).
+- **Page 3:** Vegetation Analysis (quantitative metrics table, actual VARI change detection map, formula, limitations).
+- **Page 4:** Water Body Analysis (quantitative metrics table, actual water change detection map, method notes).
+- **Page 5:** Land Cover Analysis (EuroSAT ResNet-50 classification, 3×3 spatial patch transition table, RGB pixel difference map).
+- **Page 6:** Synthesis & Scientific Limitations (cross-modular summary, complete 8-point scientific disclosure, academic conclusion).
+
+---
+
+## 6. Technologies Used
+
+| Tier | Technologies |
 |---|---|
-| Backend | Python 3.10, FastAPI, Uvicorn |
-| Image Processing | Pillow (PIL), NumPy |
-| AI Model | PyTorch, ResNet-50 (EuroSAT-pretrained) |
-| Frontend | React 19, Vite 6, CSS3 |
-| API Communication | REST (JSON + multipart/form-data) |
-| Export | CSV report download |
+| **Backend** | Python 3.10+, FastAPI, Uvicorn, Pillow (PIL), NumPy |
+| **Deep Learning** | PyTorch, Torchvision (ResNet-50 architecture) |
+| **Frontend** | React 19, Vite 6, CSS3 (Modern Dark Navy & Teal GIS Theme) |
+| **Reporting** | jsPDF, jspdf-autotable (Client-side 6-page A4 PDF rendering) |
+| **Architecture** | REST API (`/api/study-areas`, `/api/study-areas/{id}/load`, `/api/analyze`) |
 
 ---
 
-## Folder Structure
+## 7. Folder Structure
 
 ```
 TerraMind/
-├── server.py               # FastAPI backend – all three analysis modules
-├── ai_model.py             # EuroSAT ResNet-50 model loader and inference
-├── requirements.txt        # Python dependencies
-├── start.bat               # One-click Windows launcher
-├── README.md               # This file
+├── server.py               # FastAPI backend with VARI, Optical Water & ResNet-50 endpoints
+├── ai_model.py             # EuroSAT ResNet-50 loader & 3×3 patch-grid inference
+├── requirements.txt        # Python backend dependencies
+├── start.bat               # Windows one-click startup batch script
+├── README.md               # Project documentation
 │
 ├── models/
-│   └── eurosat_resnet50.pt # Pretrained EuroSAT ResNet-50 model weights
+│   └── eurosat_resnet50.pt # Pretrained PyTorch ResNet-50 model weights (10 classes)
 │
 ├── demo_datasets/
-│   ├── area_01/            # Demo Study Area 01 (t0.jpg, t1.jpg)
-│   ├── area_02/            # Demo Study Area 02 (t0.jpg, t1.jpg)
-│   └── area_03/            # Demo Study Area 03 (t0.jpg, t1.jpg)
+│   ├── area_01/            # Case 1: Regional Landscape (t0.jpg, t1.jpg)
+│   ├── area_02/            # Case 2: River Basin & Water Change (t0.jpg, t1.jpg)
+│   └── area_03/            # Case 3: Vegetation Change (t0.jpg, t1.jpg)
 │
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx         # Main React component – full 6-step workflow
-│   │   ├── App.css         # TerraMind dark GIS theme stylesheet
-│   │   └── index.css       # Base reset and root variables
-│   ├── vite.config.js      # Vite + API proxy configuration
-│   └── package.json
-│
-└── test_images/            # Additional test images
+└── frontend/
+    ├── package.json        # Frontend dependencies (React, Vite, jsPDF, jspdf-autotable)
+    ├── vite.config.js      # Vite proxy to FastAPI backend (:8000)
+    └── src/
+        ├── App.jsx         # Main dashboard component (Case tabs, Uploads, 3 Modules)
+        ├── App.css         # Dark navy GIS theme stylesheet
+        ├── reportGenerator.js # 6-page academic PDF report builder
+        └── main.jsx        # React root entry
 ```
 
 ---
 
-## Installation
+## 8. Installation & Setup
 
 ### Prerequisites
-- Python 3.9 or higher (with pip)
-- Node.js 18 or higher (with npm)
+- **Python 3.9+** with pip
+- **Node.js 18+** with npm
 
-### Step 1 – Install Python Dependencies
+### 1. Python Environment
+In the root directory `TerraMind/`:
 ```bash
-cd TerraMind
-pip install -r requirements.txt
+pip install fastapi uvicorn pillow numpy torch torchvision
 ```
 
-### Step 2 – Install Frontend Dependencies
+### 2. Frontend Dependencies
+In `TerraMind/frontend/`:
 ```bash
-cd frontend
 npm install
 ```
 
 ---
 
-## How to Run TerraMind
+## 9. How to Run TerraMind
 
-### Option A – Double-Click (Recommended)
-1. Double-click `start.bat` in the TerraMind folder.
-2. Two terminal windows will open (backend + frontend).
-3. Your browser opens automatically at `http://localhost:3000`.
+### Option 1: One-Click Startup (Recommended for Windows)
+Double-click **`start.bat`** in the root directory.
+- Checks Python and Node.js availability.
+- Launches the FastAPI backend on port 8000.
+- Launches the React/Vite development server on port 3000.
+- Automatically opens your default browser at `http://localhost:3000`.
 
-### Option B – Manual (Two Terminals)
-**Terminal 1 – Backend:**
+### Option 2: Manual Terminal Startup
+
+**Terminal 1 — Backend:**
 ```bash
-cd TerraMind
-uvicorn server:app --port 8000 --reload
+cd C:\Users\HP\Downloads\TerraMind
+python -m uvicorn server:app --port 8000 --reload
 ```
 
-**Terminal 2 – Frontend:**
+**Terminal 2 — Frontend:**
 ```bash
-cd TerraMind/frontend
+cd C:\Users\HP\Downloads\TerraMind\frontend
 npm run dev
 ```
 
-Then open: `http://localhost:3000`
+Then navigate to: **`http://localhost:3000`** in your web browser.
 
 ---
 
-## How Image Comparison Works
+## 10. Demonstration Workflow for College Presentation
 
-1. **Select Analysis Area** – choose a predefined study area from the dropdown or use Custom Upload.
-2. **Load Images** – T0 (Earlier Observation) and T1 (Later Observation) display side by side.
-3. **Validation** – The backend checks image format, dimensions, and readability before analysis.
-4. **Run Analysis** – Click **"Analyse Environmental Changes"** to send the image pair to the backend.
-5. **Results** – All three modules render simultaneously with change maps, metrics, and method notes.
-
-> **Important:** Resizing two images to the same dimensions does NOT guarantee geographic co-registration. For genuine change detection, images should come from the same sensor, same geographic extent, and be orthorectified. TerraMind displays a warning for custom uploads.
-
----
-
-## Analysis Methods
-
-| Module | Method | Bands Required | Limitation |
-|---|---|---|---|
-| Vegetation | VARI | RGB | Not NDVI; NIR unavailable |
-| Water | RGB Optical Index | RGB | Not NDWI; NIR unavailable |
-| Land Cover | EuroSAT ResNet-50 | RGB | Patch-level, not pixel-level segmentation |
-
----
-
-## AI Model Information
-
-- **Model:** ResNet-50 fine-tuned on the EuroSAT dataset
-- **Dataset:** EuroSAT – 27,000 Sentinel-2 satellite image patches across 10 land use/cover classes
-- **Input size:** 224×224 px per patch
-- **Output:** 10-class probability distribution
-- **Inference:** Scene-level (full image) + 3×3 spatial grid (9 sub-patches) for spatial transition detection
-- **Hardware:** Runs on CPU (no GPU required)
-
----
-
-## Current Limitations
-
-| Limitation | Explanation |
-|---|---|
-| No true NDVI | Requires calibrated NIR sensor bands not present in RGB images |
-| No true NDWI | Same reason – NIR required |
-| No sub-pixel segmentation | EuroSAT ResNet-50 is a classifier, not a semantic segmenter |
-| No geographic metadata | Demo datasets have no verified coordinates or projection info |
-| No radiometric calibration | RGB images are not atmospherically corrected |
-| No temporal metadata | Demo observation dates are unverified |
-
----
-
-## Example Demonstration Workflow
-
-1. Launch with `start.bat`.
-2. Select **Demo Study Area 01** (pre-loaded).
-3. See Earlier (T0) and Later (T1) images side by side.
-4. Click **Analyse Environmental Changes**.
-5. Review:
-   - Vegetation Change map (red = loss, green = growth)
-   - Water Body Change map (cyan = expansion, amber = reduction)
-   - Land Cover 3×3 patch grid (class transitions per spatial zone)
-6. Click **Export Report (CSV)** to download full results.
-7. Switch to **Demo Study Area 02** or **03** using the dropdown.
-8. Use **Custom Image Upload** to analyse your own image pairs.
-
----
-
-## API Endpoints
-
-| Endpoint | Method | Description |
-|---|---|---|
-| `/api/study-areas` | GET | List all predefined study areas |
-| `/api/study-areas/{area_id}/load` | GET | Load T0+T1 images for a study area |
-| `/api/analyze` | POST | Run all three analysis modules |
-
----
-
-*TerraMind was developed as a college project demonstrating AI-powered environmental change detection using honest, scientifically-labelled methods.*
+1. **Open Application:** Navigate to `http://localhost:3000`.
+2. **Review Case Studies:**
+   - Click **Case 1: Regional Landscape** → Inspect Earlier (T0) and Later (T1) baseline scenes.
+   - Click **Case 2: River Basin & Water Change** → View hydrological dynamics.
+   - Click **Case 3: Vegetation Change** → View canopy cover variations.
+   - Or click **Custom: Upload Images** → Drop two desktop images to analyse.
+3. **Set Threshold:** Adjust the *RGB Pixel Difference Threshold (Land Cover)* slider (default: 30 / 255).
+4. **Execute Analysis:** Click **"Analyse Environmental Changes"**.
+5. **Inspect Three Output Modules:**
+   - **Module 1 (Vegetation):** View Possible Vegetation Reduction %, Increase %, Stable %, and VARI change map.
+   - **Module 2 (Water):** View Possible Water Increase %, Reduction %, Stable %, and optical water map.
+   - **Module 3 (Land Cover):** View EuroSAT classifications, 3×3 patch transition grid, and RGB pixel difference map.
+6. **Download Report:** Click **"Download PDF Report"** to instantly generate and download the comprehensive 6-page academic report.

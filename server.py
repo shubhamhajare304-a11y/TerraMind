@@ -35,35 +35,35 @@ app.add_middleware(
 BASE_DIR = Path(__file__).parent
 DEMO_DIR = BASE_DIR / "demo_datasets"
 
-# Predefined Study Areas with honest, unverified labels as required
+# Predefined Study Areas matching required case study names
 STUDY_AREAS = {
     "area_01": {
         "id": "area_01",
-        "title": "Demo Study Area 01",
+        "title": "Case 1: Regional Landscape",
         "description": "Regional survey across forest canopy, agricultural parcels, and river corridor.",
         "dir": DEMO_DIR / "area_01",
-        "t0_filename": "Area01_Observation_T0.jpg",
-        "t1_filename": "Area01_Observation_T1.jpg",
+        "t0_filename": "RegionalLandscape_Observation_T0.jpg",
+        "t1_filename": "RegionalLandscape_Observation_T1.jpg",
         "provenance": "Demonstration Archive Tile (Unverified Regional Coordinates)",
         "observationDates": "Demonstration Epochs (Unrecorded)",
     },
     "area_02": {
         "id": "area_02",
-        "title": "Demo Study Area 02",
+        "title": "Case 2: River Basin & Water Change",
         "description": "River basin and drainage corridor tracking seasonal surface water dynamics.",
         "dir": DEMO_DIR / "area_02",
-        "t0_filename": "Area02_Observation_T0.jpg",
-        "t1_filename": "Area02_Observation_T1.jpg",
+        "t0_filename": "RiverBasin_Observation_T0.jpg",
+        "t1_filename": "RiverBasin_Observation_T1.jpg",
         "provenance": "Demonstration Archive Tile (Unverified Regional Coordinates)",
         "observationDates": "Demonstration Epochs (Unrecorded)",
     },
     "area_03": {
         "id": "area_03",
-        "title": "Demo Study Area 03",
-        "description": "Mountainous woodland canopy tracking timber clear-cut and surface disturbance.",
+        "title": "Case 3: Vegetation Change",
+        "description": "Woodland canopy tracking vegetation dynamics and surface disturbance.",
         "dir": DEMO_DIR / "area_03",
-        "t0_filename": "Area03_Observation_T0.jpg",
-        "t1_filename": "Area03_Observation_T1.jpg",
+        "t0_filename": "VegetationChange_Observation_T0.jpg",
+        "t1_filename": "VegetationChange_Observation_T1.jpg",
         "provenance": "Demonstration Archive Tile (Unverified Regional Coordinates)",
         "observationDates": "Demonstration Epochs (Unrecorded)",
     },
@@ -312,33 +312,45 @@ def perform_environmental_analysis(
         # Module 1
         "vegetation": {
             "method": "RGB-based VARI Estimation",
-            "methodNote": "Visible Atmospherically Resistant Index (VARI). Formula: (G-R)/(G+R-B). True NDVI requires calibrated Near-Infrared (NIR) bands.",
+            "methodNote": "VARI (Visible Atmospherically Resistant Index) estimates vegetation using visible RGB image bands. Formula: VARI = (G - R) / (G + R - B). Limitation: VARI is not NDVI. Accurate NDVI analysis requires calibrated Near-Infrared (NIR) satellite data.",
             "baselineCoverPct": round(veg_t0_pct, 2),
             "followupCoverPct": round(veg_t1_pct, 2),
             "lossPct": round(veg_loss_pct, 2),
             "growthPct": round(veg_growth_pct, 2),
             "stablePct": round(veg_stable_pct, 2),
             "netShiftPct": round(veg_net_shift, 2),
+            "lossLabel": "Possible Vegetation Reduction",
+            "growthLabel": "Possible Vegetation Increase",
+            "stableLabel": "Stable Vegetation Pixels",
+            "netShiftLabel": "Net Vegetation Change",
+            "lossDescription": "Reduction in estimated green vegetation.",
+            "growthDescription": "Increase in estimated green vegetation.",
             "mapImage": img_to_base64(veg_overlay),
         },
 
         # Module 2
         "water": {
             "method": "RGB Optical Water Index Estimation",
-            "methodNote": "Optical estimate based on visible spectrum absorption. Formula uses blue/green to red absorption with shadow exclusion. True NDWI requires Near-Infrared (NIR) sensors.",
+            "methodNote": "The system estimates possible water areas using visible RGB image information. Limitation: This method is not NDWI. Accurate NDWI analysis requires suitable Near-Infrared (NIR) satellite bands. Water increase indicates higher estimated water coverage, not verified flooding.",
             "baselineCoverPct": round(water_t0_pct, 2),
             "followupCoverPct": round(water_t1_pct, 2),
             "expansionPct": round(water_gain_pct, 2),
             "reductionPct": round(water_loss_pct, 2),
             "stablePct": round(water_stable_pct, 2),
             "netShiftPct": round(water_net_shift, 2),
+            "expansionLabel": "Possible Water Increase",
+            "reductionLabel": "Possible Water Reduction",
+            "stableLabel": "Stable Water Pixels",
+            "netShiftLabel": "Net Water Change",
+            "expansionDescription": "Increase in estimated water coverage.",
+            "reductionDescription": "Reduction in estimated water coverage.",
             "mapImage": img_to_base64(water_overlay),
         },
 
         # Module 3
         "landCover": {
-            "method": "EuroSAT ResNet-50 Deep Neural Network Classification",
-            "methodNote": "Image-level and 3×3 patch classification over 10 EuroSAT classes. Does not claim sub-pixel semantic segmentation.",
+            "method": "EuroSAT ResNet50 Deep Classification",
+            "methodNote": "ResNet50 is a pretrained deep learning model that classifies image patches into land-cover categories. Confidence is the model's prediction score, not guaranteed accuracy. The 3×3 grid represents image patch classification, not pixel-level semantic segmentation. RGB pixel difference and AI land-cover classification are two separate calculations.",
             "baselineClass": t0_top_class,
             "baselineConfidence": t0_top_conf,
             "followupClass": t1_top_class,
@@ -351,6 +363,9 @@ def perform_environmental_analysis(
             "totalPatches": 9,
             "pixelShiftPct": round(pixel_shift_pct, 2),
             "pixelStablePct": round(pixel_stable_pct, 2),
+            "pixelShiftLabel": "RGB Pixel Difference",
+            "pixelStableLabel": "RGB Pixel Stability",
+            "patchChangeLabel": "Patch Classification Changes",
             "spectralDeltaMap": img_to_base64(lc_overlay),
         },
     }
