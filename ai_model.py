@@ -54,14 +54,14 @@ def load_model():
     return model
 
 
-def predict_land_cover(image):
-    """Predict land cover using nine image patches."""
-
+def predict_land_cover_detailed(image):
+    """Predict land cover using nine image patches, returning scene & spatial patch predictions."""
     image = image.convert("RGB")
     width, height = image.size
 
     model = load_model()
     patch_probabilities = []
+    patch_grid = []
 
     for row in range(3):
         for col in range(3):
@@ -79,6 +79,13 @@ def predict_land_cover(image):
                 )[0]
 
             patch_probabilities.append(probabilities)
+            top_val, top_idx = torch.topk(probabilities, 1)
+            patch_grid.append({
+                "row": row,
+                "col": col,
+                "topClass": CLASSES[top_idx.item()],
+                "confidence": round(top_val.item() * 100, 2),
+            })
 
     # Average the probabilities across all nine patches.
     average_probabilities = torch.stack(
@@ -89,10 +96,27 @@ def predict_land_cover(image):
         average_probabilities, 3
     )
 
-    return [
+    top_predictions = [
         {
             "class": CLASSES[index.item()],
-            "confidence": value.item() * 100,
+            "confidence": round(value.item() * 100, 2),
         }
         for value, index in zip(top_values, top_indices)
     ]
+
+    all_class_scores = {
+        CLASSES[i]: round(average_probabilities[i].item() * 100, 2)
+        for i in range(len(CLASSES))
+    }
+
+    return {
+        "topPredictions": top_predictions,
+        "allClassScores": all_class_scores,
+        "patchGrid": patch_grid,
+    }
+
+
+def predict_land_cover(image):
+    """Predict land cover using nine image patches (returns top predictions list)."""
+    return predict_land_cover_detailed(image)["topPredictions"]
+
